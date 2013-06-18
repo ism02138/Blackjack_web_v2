@@ -1,0 +1,25 @@
+<h4>Welcome, <%= session[:player_name] %></h4>
+
+<p><%= session[:computer_name] %>'s cards:</p>
+
+<% session[:computer_hand].each do |card| %>
+<img src="/images/cards/<%= "#{card[0]}_#{card[1]}"%>.jpg">
+<% end %>
+
+<p>Total of: <%= session[:computer_total] %></p>
+
+
+<p><%= session[:player_name] %>'s cards:</p>
+
+<% session[:player_hand].each do |card| %>
+<img src="/images/cards/<%= "#{card[0]}_#{card[1]}"%>.jpg">
+<% end %>
+
+<p>Total of: <%= session[:player_total] %></p>
+
+<form action="hit" method='post'>
+	<input type="submit" value="Hit" class="btn">
+</action>
+<form action="stay" method='post'>
+	<input type="submit" value="Stay" class ="btn">
+</action>
