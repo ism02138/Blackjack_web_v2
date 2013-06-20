@@ -4,6 +4,11 @@ require 'pry'
 
 set :sessions, true
 
+before do
+	@show_player_buttons = true	
+	@show_computer_buttons = false
+end
+
 get '/' do			
 	session[:computer_name] = "Evil Computer"
 	if session[:player_name]
@@ -35,29 +40,58 @@ get '/play_game' do
 	session[:player_hand] << session[:deck].pop
 	session[:computer_hand] << session[:deck].pop
 
-	session[:player_total] = hand_sum(session[:player_hand])
-	session[:computer_total] = hand_sum(session[:computer_hand])
-
 	erb :play_game
 end
 
-def hand_sum(hand)
-	sum = [0, 0]
-	hand.each { |suit, value|
-		if value == 'jack' || value == 'queen' || value == 'king'
-			sum[0] += 10
-			sum[1] += 10
-		elsif value == 'ace'
-			sum[0] += 1
-			sum[1] += 11
-		else
-			sum[0] += value.to_i
-			sum[1] += value.to_i
-		end
-	}
-	if sum[1] > 21 || sum[0] == sum[1]
-		sum.pop
-		return "#{sum[0]}"
-	end	
-	return "#{sum[0]} or #{sum[1]}"
+post '/player_hit' do
+	session[:player_hand] << session[:deck].pop
+	if hand_sum(session[:player_hand]).min > 21
+		@show_player_buttons = false
+	end
+	erb :play_game
+end
+
+post '/player_stay' do
+	@show_player_buttons = false	
+
+	redirect '/computer'
+end
+
+get '/computer' do
+	if hand_sum(session[:computer_hand]).max < 17
+		@show_computer_buttons = true
+	end
+	erb :play_game
+end
+
+post '/computer_hit' do
+	session[:computer_hand] << session[:deck].pop
+	redirect '/computer'
+end
+
+
+helpers do
+	def hand_sum(hand)
+		sum = [0, 0]
+		hand.each { |suit, value|
+			if value == 'jack' || value == 'queen' || value == 'king'
+				sum[0] += 10
+				sum[1] += 10
+			elsif value == 'ace'
+				sum[0] += 1
+				sum[1] += 11
+			else
+				sum[0] += value.to_i
+				sum[1] += value.to_i
+			end
+		}
+		if sum[1] > 21 || sum[0] == sum[1]
+			sum.pop
+		end	
+		return sum
+	end
+
+	def return_card_picture(card)
+		return "<img src='/images/cards/#{card[0]}_#{card[1]}.jpg' class='card_image'>"
+	end
 end
