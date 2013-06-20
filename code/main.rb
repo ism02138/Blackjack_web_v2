@@ -4,12 +4,9 @@ require 'pry'
 
 set :sessions, true
 
-before do
-	@show_player_buttons = true	
-	@show_computer_buttons = false
-end
-
 get '/' do			
+	session[:show_player_buttons] = true
+	session[:show_computer_buttons] = false
 	session[:computer_name] = "Evil Computer"
 	if session[:player_name]
 		redirect '/play_game'
@@ -47,21 +44,24 @@ post '/player_hit' do
 	session[:player_hand] << session[:deck].pop
 	if hand_sum(session[:player_hand]).min > 21
 		@show_player_buttons = false
+		erb :play_game
+	else
+		redirect '/game_over'
 	end
-	erb :play_game
 end
 
 post '/player_stay' do
-	@show_player_buttons = false	
-
+	session[:show_player_buttons] = false
 	redirect '/computer'
 end
 
 get '/computer' do
-	if hand_sum(session[:computer_hand]).max < 17
-		@show_computer_buttons = true
+	if hand_sum(session[:computer_hand]).min < 17
+		session[:show_computer_buttons] = true
+		erb :play_game
+	else
+		redirect '/game_over'
 	end
-	erb :play_game
 end
 
 post '/computer_hit' do
@@ -69,6 +69,9 @@ post '/computer_hit' do
 	redirect '/computer'
 end
 
+get '/game_over' do
+	erb :game_over
+end
 
 helpers do
 	def hand_sum(hand)
@@ -93,5 +96,24 @@ helpers do
 
 	def return_card_picture(card)
 		return "<img src='/images/cards/#{card[0]}_#{card[1]}.jpg' class='card_image'>"
+	end
+
+	def compare_hands(hand1, hand2)
+		player_hand = hand_sum(hand1)
+		computer_hand = hand_sum(hand2)
+
+		if player_hand.min > 21
+			return "Player was over 21 with #{player_hand.min}"
+		elsif computer_hand.min > 21
+			return "Computer was over 21 with #{computer_hand.min}"
+		else
+			player_best = player_hand.select { |total| total < 22 }.max
+			computer_best = computer_hand.select { |total| total < 22 }.max
+			if player_best > computer_best
+				return "Player wins with #{player_best}. Computer had #{computer_best}"
+			else
+				return "Computer wins with #{computer_best}. Player had #{player_best}"
+			end
+		end
 	end
 end

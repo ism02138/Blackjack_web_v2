@@ -1,0 +1,16 @@
+
+<%= compare_hands(session[:player_hand], session[:computer_hand]) %>
+
+<p><%= session[:computer_name] %>'s cards:</p>
+
+<% session[:computer_hand].each do |card| %>
+	<%= return_card_picture(card) %>
+<% end %>
+
+
+
+<p><%= session[:player_name] %>'s cards:</p>
+
+<% session[:player_hand].each do |card| %>
+<img src="/images/cards/<%= "#{card[0]}_#{card[1]}"%>.jpg">
+<% end %>

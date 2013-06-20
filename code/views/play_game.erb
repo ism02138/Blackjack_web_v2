@@ -10,7 +10,7 @@
 
 <p>Total of: <%= computer_total.size == 1 ? computer_total[0].to_s : computer_total[0].to_s + " or " + computer_total[1].to_s %></p>
 
-<% if @show_computer_buttons %>
+<% if session[:show_computer_buttons] %>
 	<form action="/computer_hit" method='post'>
 		<input type="submit" value="Show Card" class="btn">
 	</form>
@@ -27,7 +27,7 @@
 
 <p>Total of: <%= player_total.size == 1 ? player_total[0].to_s : player_total[0].to_s + " or " + player_total[1].to_s %></p>
 
-<% if @show_player_buttons %>
+<% if session[:show_player_buttons] %>
 	<form action="/player_hit" method='post'>
 		<input type="submit" value="Hit" class="btn">
 	</form>
