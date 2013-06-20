@@ -27,7 +27,7 @@
 
 <p>Total of: <%= player_total.size == 1 ? player_total[0].to_s : player_total[0].to_s + " or " + player_total[1].to_s %></p>
 
-<% if %>
+<% if @show_player_buttons %>
 	<form action="/player_hit" method='post'>
 		<input type="submit" value="Hit" class="btn">
 	</form>
