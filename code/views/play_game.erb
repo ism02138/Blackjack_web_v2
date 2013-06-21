@@ -2,13 +2,21 @@
 
 <p><%= session[:computer_name] %>'s cards:</p>
 
-<% session[:computer_hand].each do |card| %>
-	<%= return_card_picture(card) %>
+<% session[:computer_hand].each_with_index do |card, index| %>
+	<% if index == 0 && session[:show_player_buttons] %>
+		<img src='/images/cards/cover.jpg' class='card_image'>
+	<% else %> 
+		<%= return_card_picture(card) %>
+	<% end %>
 <% end %>
 
-<% computer_total = hand_sum(session[:computer_hand]) %>
+<p></p>
 
-<p>Total of: <%= computer_total.size == 1 ? computer_total[0].to_s : computer_total[0].to_s + " or " + computer_total[1].to_s %></p>
+<% if !session[:show_player_buttons] %>
+	<% computer_total = hand_sum(session[:computer_hand]) %>
+
+	Total of: <%= computer_total.size == 1 ? computer_total[0].to_s : computer_total[0].to_s + " or " + computer_total[1].to_s %>
+<% end %>
 
 <% if session[:show_computer_buttons] %>
 	<form action="/computer_hit" method='post'>
