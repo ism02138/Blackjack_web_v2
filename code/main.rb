@@ -43,10 +43,10 @@ end
 post '/player_hit' do
 	session[:player_hand] << session[:deck].pop
 	if hand_sum(session[:player_hand]).min > 21
-		@show_player_buttons = false
-		erb :play_game
-	else
+		session[:show_player_buttons] = false
 		redirect '/game_over'
+	else
+		erb :play_game
 	end
 end
 

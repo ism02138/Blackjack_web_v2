@@ -1,16 +1,20 @@
 
-<%= compare_hands(session[:player_hand], session[:computer_hand]) %>
+<div class="well">
+	<h4><%= compare_hands(session[:player_hand], session[:computer_hand]) %></h4>
+</div>
 
-<p><%= session[:computer_name] %>'s cards:</p>
+<div class="well">
+	<p><%= session[:computer_name] %>'s cards:</p>
 
-<% session[:computer_hand].each do |card| %>
-	<%= return_card_picture(card) %>
-<% end %>
+	<% session[:computer_hand].each do |card| %>
+		<%= return_card_picture(card) %>
+	<% end %>
+</div>
 
+<div class="well">
+	<p><%= session[:player_name] %>'s cards:</p>
 
-
-<p><%= session[:player_name] %>'s cards:</p>
-
-<% session[:player_hand].each do |card| %>
-<img src="/images/cards/<%= "#{card[0]}_#{card[1]}"%>.jpg">
-<% end %>
+	<% session[:player_hand].each do |card| %>
+		<img src="/images/cards/<%= "#{card[0]}_#{card[1]}"%>.jpg">
+	<% end %>
+</div>

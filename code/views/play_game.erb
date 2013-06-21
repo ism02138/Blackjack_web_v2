@@ -1,45 +1,65 @@
 <h6>Welcome, <%= session[:player_name] %></h6>
 
-<p><%= session[:computer_name] %>'s cards:</p>
+<div class="well">
+	<div class="row">
+		<p><%= session[:computer_name] %>'s cards:</p>
 
-<% session[:computer_hand].each_with_index do |card, index| %>
-	<% if index == 0 && session[:show_player_buttons] %>
-		<img src='/images/cards/cover.jpg' class='card_image'>
-	<% else %> 
-		<%= return_card_picture(card) %>
+		<% session[:computer_hand].each_with_index do |card, index| %>
+			<div class="span2">
+			<% if index == 0 && session[:show_player_buttons] %>
+				<img src='/images/cards/cover.jpg' class='card_image'>
+			<% else %> 
+				<%= return_card_picture(card) %>
+			<% end %>
+			</div>
+		<% end %>
+	<p></p>
+
+	<% if !session[:show_player_buttons] %>
+		<% computer_total = hand_sum(session[:computer_hand]) %>
+		<div class="span2">
+			Total of: <%= computer_total.size == 1 ? computer_total[0].to_s : computer_total[0].to_s + " or " + computer_total[1].to_s %>
+		</div>
 	<% end %>
-<% end %>
 
-<p></p>
+	<% if session[:show_computer_buttons] %>
+		<div class="span1">
+			<form action="/computer_hit" method='post'>
+				<input type="submit" value="Show Card" class="btn">
+			</form>
+		</div>
+	<% end %>
+	</div>
+</div>
 
-<% if !session[:show_player_buttons] %>
-	<% computer_total = hand_sum(session[:computer_hand]) %>
+<div class="well">
+	<div class="row">
+		<p><%= session[:player_name] %>'s cards:</p>
 
-	Total of: <%= computer_total.size == 1 ? computer_total[0].to_s : computer_total[0].to_s + " or " + computer_total[1].to_s %>
-<% end %>
+		<% session[:player_hand].each do |card| %>
+			<div class="span2">
+				<img src="/images/cards/<%= "#{card[0]}_#{card[1]}"%>.jpg">
+			</div>
+		<% end %>
 
-<% if session[:show_computer_buttons] %>
-	<form action="/computer_hit" method='post'>
-		<input type="submit" value="Show Card" class="btn">
-	</form>
-<% end %>
+		
+		<% player_total = hand_sum(session[:player_hand]) %>
+		
+		<div class="span1">
+			<p>Total of: <%= player_total.size == 1 ? player_total[0].to_s : player_total[0].to_s + " or " + player_total[1].to_s %></p>
+		</div>
 
-
-<p><%= session[:player_name] %>'s cards:</p>
-
-<% session[:player_hand].each do |card| %>
-<img src="/images/cards/<%= "#{card[0]}_#{card[1]}"%>.jpg">
-<% end %>
-
-<% player_total = hand_sum(session[:player_hand]) %>
-
-<p>Total of: <%= player_total.size == 1 ? player_total[0].to_s : player_total[0].to_s + " or " + player_total[1].to_s %></p>
-
-<% if session[:show_player_buttons] %>
-	<form action="/player_hit" method='post'>
-		<input type="submit" value="Hit" class="btn">
-	</form>
-	<form action="/player_stay" method='post'>
-		<input type="submit" value="Stay" class ="btn">
-	</form>
-<% end %>
+		<% if session[:show_player_buttons] %>
+			<div class="span1">
+				<form action="/player_hit" method='post'>
+					<input type="submit" value="Hit" class="btn">
+				</form>
+			</div>
+			<div class="span1">
+				<form action="/player_stay" method='post'>
+					<input type="submit" value="Stay" class ="btn">
+				</form>
+			</div>
+		<% end %>
+	</div>
+</div>
