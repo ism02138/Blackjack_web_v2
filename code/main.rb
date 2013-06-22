@@ -5,11 +5,11 @@ require 'pry'
 set :sessions, true
 
 get '/' do			
-	session[:show_player_buttons] = true
-	session[:show_computer_buttons] = false
+	session[:player_money] = 100
+
 	session[:computer_name] = "Evil Computer"
 	if session[:player_name]
-		redirect '/play_game'
+		redirect '/bet'
 	else
 		redirect '/new_player'
 	end
@@ -24,10 +24,28 @@ post '/new_player' do
 	redirect '/play_game'
 end
 
+get '/bet' do
+	session[:player_money] > 0 ? session[:show_bet_button] = true : session[:show_bet_button] = false
+	erb :bet
+end
+
+post '/bet' do 
+	bet = params[:bet_amount].to_i
+	if bet > 0 && bet <= session[:player_money] 
+		session[:player_bet] = bet
+		redirect '/play_game'
+	else
+		redirect '/bet'
+	end
+end
+
 get '/play_game' do
 	suits = ['hearts', 'diamonds', 'clubs', 'spades']
 	values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king', 'ace']
 	session[:deck] = suits.product(values).shuffle!
+
+	session[:show_player_buttons] = true
+	session[:show_computer_buttons] = false
 
 	session[:player_hand] = []
 	session[:computer_hand] = []
@@ -56,7 +74,8 @@ post '/player_stay' do
 end
 
 get '/computer' do
-	if hand_sum(session[:computer_hand]).min < 17
+	computer_sum = hand_sum(session[:computer_hand])
+	if computer_sum.select { |total| total < 22 && total >= 17 }.max == nil && computer_sum.min < 17
 		session[:show_computer_buttons] = true
 		erb :play_game
 	else
@@ -103,16 +122,20 @@ helpers do
 		computer_hand = hand_sum(hand2)
 
 		if player_hand.min > 21
-			return "Player was over 21 with #{player_hand.min}"
+			session[:player_money] = session[:player_money] - session[:player_bet]
+			return "Player was over with #{player_hand.min}. You have #{session[:player_money]} to bet"
 		elsif computer_hand.min > 21
-			return "Computer was over 21 with #{computer_hand.min}"
+			session[:player_money] = session[:player_bet] + session[:player_money]
+			return "Computer was over with #{computer_hand.min}. You have #{session[:player_money]} to bet"
 		else
 			player_best = player_hand.select { |total| total < 22 }.max
 			computer_best = computer_hand.select { |total| total < 22 }.max
 			if player_best > computer_best
-				return "Player wins with #{player_best}. Computer had #{computer_best}"
+				session[:player_money] = session[:player_bet] + session[:player_money]
+				return "Player wins with #{player_best}. Computer had #{computer_best}. You now have #{session[:player_money]} to bet"
 			else
-				return "Computer wins with #{computer_best}. Player had #{player_best}"
+				session[:player_money] = session[:player_money] - session[:player_bet]
+				return "Computer wins with #{computer_best}. Player had #{player_best}. You now have #{session[:player_money]} to bet"
 			end
 		end
 	end

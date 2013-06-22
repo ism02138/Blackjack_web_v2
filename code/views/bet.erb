@@ -1,0 +1,19 @@
+<h6>Welcome, <%= session[:player_name] %>.</h6>
+<% if session[:player_money] != 0 %>
+	You have <%= session[:player_money] %> to bet.
+<% else %>
+	You have nothing left! Restart the session.
+<% end %>
+
+<% if session[:show_bet_button] %>
+	<div class="well">
+		<div class="row">
+			How much would you like to bet? (Must be greater than 0 and less than <%= session[:player_money] %>)
+			<form action="bet" method='post'>
+				<input type="text" name="bet_amount">
+				</br>
+				<input type="submit" value="Bet" class="btn">
+			</form>
+		</div>
+	</div>
+<% end %>
