@@ -7,13 +7,11 @@
 
 <% if session[:show_bet_button] %>
 	<div class="well">
-		<div class="row">
-			How much would you like to bet? (Must be greater than 0 and less than <%= session[:player_money] %>)
-			<form action="bet" method='post'>
-				<input type="text" name="bet_amount">
-				</br>
-				<input type="submit" value="Bet" class="btn">
-			</form>
-		</div>
+		How much would you like to bet? (Must be greater than 0 and less than <%= session[:player_money] %>)
+		<form action="bet" method='post'>
+			<input type="text" name="bet_amount">
+			</br>
+			<input type="submit" value="Bet" button class="btn btn-primary" >
+		</form>
 	</div>
 <% end %>
